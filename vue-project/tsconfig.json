@@ -1,0 +1,16 @@
+{
+  "files": [],
+  "compilerOptions": {
+    "allowJs": true,
+    "noImplicitAny": false,
+    "strict": false,
+  },
+  "references": [
+    {
+      "path": "./tsconfig.node.json"
+    },
+    {
+      "path": "./tsconfig.app.json"
+    }
+  ]
+}
