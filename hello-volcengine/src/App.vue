@@ -7,6 +7,7 @@
 
 <script>
 import VERTC, {
+  MediaType,
   RoomProfileType,
   StreamIndex,
 } from "@volcengine/rtc";
@@ -44,13 +45,19 @@ export default {
         engine.setLocalVideoPlayer(StreamIndex.STREAM_INDEX_MAIN, {
           renderDom: "local-player",
         });
+        // 开始屏幕采集
+        await engine.startScreenCapture({
+          enableAudio: true,
+        });
+        // 开始发布屏幕流
+        await engine.publishScreen(MediaType.AUDIO_AND_VIDEO);
         // 订阅和播放房间内的音视频流
-        engine.on(VERTC.events.onUserPublishStream, async function(event) {
+        engine.on(VERTC.events.onUserPublishStream, async function (event) {
           const { userId, mediaType } = event;
           console.log(event);
           engine.setRemoteVideoPlayer(VERTC.StreamIndex.STREAM_INDEX_MAIN, {
             userId: userId,
-            renderDom: "remote-player"
+            renderDom: "remote-player",
           });
         });
       })
