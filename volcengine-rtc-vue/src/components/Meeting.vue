@@ -2,22 +2,30 @@
   <div class="meeting">
     <div class="video-container">
       <div id="local-player" class="local"></div>
-      <div id="remote-video" class="remote"></div>
+      <div id="remote-video" class="remote">
+        <MediaPlayer
+          v-for="(item, index) in remoteStreams"
+          :key="index"
+          :userId="item"
+        ></MediaPlayer>
+      </div>
     </div>
     <div class="control-toolbar">
-      <VoiceControl />
-      <VideoControl />
-      <LeaveControl />
+      <VoiceControl :isVoiceOn="isVoiceOn" :toggleVoice="toggleVoice" />
+      <VideoControl :isVideoOn="isVideoOn" :toggleVideo="toggleVideo" />
+      <LeaveControl :leaveRoom="leaveRoom" />
     </div>
   </div>
 </template>
 <script>
 import { defineComponent } from "vue";
-import { ElMessage, ElMessageBox } from "element-plus";
+import { ElMessageBox } from "element-plus";
+import { MediaType } from "@volcengine/rtc";
 import RtcClient from "@/sdk/rtc-client";
 import VoiceControl from "./VoiceControl.vue";
 import VideoControl from "./VideoControl.vue";
 import LeaveControl from "./LeaveControl.vue";
+import MediaPlayer from "./MediaPlayer.vue";
 import { streamOptions, config } from "@/config";
 export default defineComponent({
   name: "Meeting",
@@ -25,6 +33,7 @@ export default defineComponent({
     VoiceControl,
     VideoControl,
     LeaveControl,
+    MediaPlayer,
   },
   props: {
     userId: {
@@ -39,6 +48,9 @@ export default defineComponent({
   data() {
     return {
       rtcClient: null,
+      isVideoOn: true,
+      isVoiceOn: true,
+      remoteStreams: [],
     };
   },
   computed: {
@@ -59,15 +71,19 @@ export default defineComponent({
       this.rtcClient
         .join(config.token, this.roomId, this.userId)
         .then(() => {
-          this.rtcClient.createLocalStream(this.userId, function callback(res) {
+          this.rtcClient.createLocalStream(this.userId, (res) => {
             const { code, msg, devicesStatus } = res;
             if (code == -1) {
               console.error(msg, devicesStatus);
+              toggleVoice(false);
+              toggleVideo(false);
               ElMessageBox.alert(msg, devicesStatus, {
                 confirmButtonText: "OK",
-                callback: (action) => {
-                },
+                callback: (action) => {},
               });
+            } else {
+              this.toggleVoice(true);
+              this.toggleVideo(true);
             }
           });
         })
@@ -75,15 +91,71 @@ export default defineComponent({
           console.log("err", err);
         });
     },
-    handleUserEnter() {},
-    handleUserLeave() {},
-    handleUserPublishStream() {},
-    handleUserUnpublishStream() {},
-    handleUserStartVideoCapture() {},
-    handleUserStopVideoCapture() {},
+    handleUserEnter(event) {
+      console.log("handleUserEnter: ", event);
+      const { userInfo } = event;
+      const remoteUserId = userInfo.userId;
+      if (this.remoteStreams.indexOf(remoteUserId) == -1) {
+        this.remoteStreams.push(remoteUserId);
+      }
+    },
+    handleUserLeave(event) {
+      console.log("handleUserLeave: ", event);
+      const { userInfo } = event;
+      const remoteUserId = userInfo.userId;
+      const index = this.remoteStreams.indexOf(remoteUserId);
+      if (index > -1) {
+        this.remoteStreams.splice(index, 1);
+      }
+    },
+    // 房间内新增摄像头或者麦克风时的回调
+    handleUserPublishStream(stream) {
+      if (stream.mediaType & MediaType.AUDIO) {
+        if (this.remoteStreams.indexOf(stream.userId) > -1) {
+          console.log("remoteStreams: ", this.remoteStreams);
+          setTimeout(() => {
+            this.rtcClient.setRemoteVideoPlayer(
+              stream.userId,
+              `remoteStream_${stream.userId}`
+            );
+          }, 0);
+        }
+      }
+    },
+    // 房间内减少摄像头或者麦克风时的回调
+    handleUserUnpublishStream(stream) {
+      if (stream.mediaType & MediaType.AUDIO) {
+        if (this.remoteStreams.indexOf(stream.userId) > -1) {
+          this.rtcClient.setRemoteVideoPlayer(stream.userId, undefined);
+        }
+      }
+    },
+    handleUserStartVideoCapture(stream) {
+      this.rtcClient.setRemoteVideoPlayer(
+        stream.userId,
+        `remoteStream_${stream.userId}`
+      );
+    },
+    handleUserStopVideoCapture(stream) {
+      this.rtcClient.setRemoteVideoPlayer(stream.userId, undefined);
+    },
     handleEventError() {},
     handleAutoPlayFail() {},
     handlePlayerEvent() {},
+    toggleVoice(value) {
+      this.isVoiceOn = value;
+    },
+    toggleVideo(value) {
+      this.isVideoOn = value;
+    },
+    leaveRoom() {
+      if (!this.rtcClient) {
+        return;
+      }
+      this.rtcClient.removeEventListener();
+      this.rtcClient.leave();
+      this.$emit("leave");
+    },
   },
   mounted() {
     this.rtcClient = new RtcClient({

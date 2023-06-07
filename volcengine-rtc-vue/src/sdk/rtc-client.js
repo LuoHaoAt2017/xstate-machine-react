@@ -36,7 +36,6 @@ export default class RtcClient {
   async setRemoteVideoPlayer(remoteUserId, domId) {
     // 如果进房的config有自动订阅，这里就不需要订阅了
     // await this.engine.subscribeStream(remoteUserId, MediaType.AUDIO_AND_VIDEO);
-
     await this.engine.setRemoteVideoPlayer(StreamIndex.STREAM_INDEX_MAIN, {
       userId: remoteUserId,
       renderDom: domId,

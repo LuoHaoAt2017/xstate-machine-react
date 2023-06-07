@@ -1,8 +1,8 @@
 <template>
   <div class="container">
-    <h3 class="title">远程会诊</h3>
+    <el-button type="primary" @click="dialogVisible = true">发起远程会诊</el-button>
     <div class="room" v-if="hasJoin">
-      <MeetingRoom :userId="userId" :roomId="roomId"/>
+      <MeetingRoom :userId="userId" :roomId="roomId" @leave="hasJoin=false;"/>
     </div>
     <el-dialog v-model="dialogVisible" title="登录" width="360px">
       <el-form :model="ruleForm" :rules="formRules" ref="ruleFormRef">
@@ -54,7 +54,7 @@ export default defineComponent({
           },
         ],
       },
-      dialogVisible: true,
+      dialogVisible: false,
       hasJoin: false
     };
   },
@@ -82,6 +82,7 @@ export default defineComponent({
   text-align: center;
   height: 36px;
   line-height: 36px;
+  margin: 0 auto;
 }
 .room {
   height: calc(100% - 36px);

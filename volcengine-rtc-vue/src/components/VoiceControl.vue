@@ -5,14 +5,14 @@
       :src="micOnIcon"
       width="32"
       height="32"
-      @click.stop="isVoiceOn = false"
+      @click.stop="() => toggleVoice(false)"
     />
     <img
       v-else
       :src="micOffIcon"
       width="32"
       height="32"
-      @click.stop="isVoiceOn = true"
+      @click.stop="() => toggleVoice(true)"
     />
   </el-icon>
 </template>
@@ -22,9 +22,16 @@ import micOnIcon from "@/assets/images/micOnIcon.png";
 import micOffIcon from "@/assets/images/micOffIcon.png";
 export default defineComponent({
   name: "VoiceControl",
+  props: {
+    isVoiceOn: {
+      default: false,
+    },
+    toggleVoice: {
+      default: () => {}
+    }
+  },
   data() {
     return {
-      isVoiceOn: false,
       micOnIcon: micOnIcon,
       micOffIcon: micOffIcon,
     };
