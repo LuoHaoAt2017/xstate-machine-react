@@ -1,11 +1,10 @@
 <template>
   <div class="container">
     <h3 class="title">远程会诊</h3>
-    <div class="online-video">
-      <div id="local-video" class="local"></div>
-      <div id="remote-video" class="remote"></div>
+    <div class="room" v-if="hasJoin">
+      <MeetingRoom />
     </div>
-    <el-dialog v-model="dialogVisible" title="登录" width="30%">
+    <el-dialog v-model="dialogVisible" title="登录" width="360px">
       <el-form :model="ruleForm" :rules="formRules" ref="ruleFormRef">
         <el-form-item prop="roomId">
           <el-input placeholder="会议ID" v-model="ruleForm.roomId"></el-input>
@@ -27,8 +26,12 @@
 
 <script>
 import { defineComponent } from "vue";
+import Meeting from '@/components/Meeting.vue';
 export default defineComponent({
   name: "App",
+  components: {
+    MeetingRoom: Meeting
+  },
   data() {
     return {
       ruleForm: {
@@ -52,7 +55,10 @@ export default defineComponent({
         ],
       },
       dialogVisible: true,
+      hasJoin: false
     };
+  },
+  computed: {
   },
   methods: {
     async handleSubmit() {
@@ -61,6 +67,7 @@ export default defineComponent({
         if (valid) {
           console.log("submit!");
           this.dialogVisible = false;
+          this.hasJoin = true;
         } else {
           console.log("error submit!", fields);
         }
@@ -74,22 +81,17 @@ export default defineComponent({
 <style scoped>
 .title {
   text-align: center;
+  height: 36px;
+  line-height: 36px;
+}
+.room {
+  height: calc(100% - 36px);
 }
 .container {
   width: 100%;
   height: 100%;
-}
-.online-video {
-  display: flex;
-  justify-content: space-between;
-}
-.local {
-  flex-basis: 320px;
-  flex-grow: 1;
-  flex-shrink: 1;
-}
-.remote {
-  width: 240px;
+  box-sizing: border-box;
+  padding: 10px 10px;
 }
 .footer {
   display: flex;
