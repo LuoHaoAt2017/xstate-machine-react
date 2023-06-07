@@ -144,9 +144,11 @@ export default defineComponent({
     handlePlayerEvent() {},
     toggleVoice(value) {
       this.isVoiceOn = value;
+      this.rtcClient.changeAudioState(value);
     },
     toggleVideo(value) {
       this.isVideoOn = value;
+      this.rtcClient.changeVideoState(value);
     },
     leaveRoom() {
       if (!this.rtcClient) {
