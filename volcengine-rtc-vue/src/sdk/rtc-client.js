@@ -11,7 +11,7 @@ export default class RtcClient {
     this.handleUserStopVideoCapture = props.handleUserStopVideoCapture;
     this.handleEventError = props.handleEventError;
     this.setRemoteVideoPlayer = this.setRemoteVideoPlayer.bind(this);
-    this.handleUserJoin = props.handleUserJoin;
+    this.handleUserEnter = props.handleUserEnter;
     this.handleUserLeave = props.handleUserLeave;
     this.handleAutoPlayFail = props.handleAutoPlayFail;
     this.handlePlayerEvent = props.handlePlayerEvent;
@@ -24,7 +24,7 @@ export default class RtcClient {
     this.engine.on(VERTC.events.onUserStartVideoCapture, this.handleUserStartVideoCapture);
     this.engine.on(VERTC.events.onUserStopVideoCapture, this.handleUserStopVideoCapture);
 
-    this.engine.on(VERTC.events.onUserJoined, this.handleUserJoin);
+    this.engine.on(VERTC.events.onUserJoined, this.handleUserEnter);
     this.engine.on(VERTC.events.onUserLeave, this.handleUserLeave);
     this.engine.on(VERTC.events.onAutoplayFailed, (events) => {
       console.log('VERTC.events.onAutoplayFailed', events.userId);
@@ -50,7 +50,7 @@ export default class RtcClient {
     this.engine.off(VERTC.events.onUserUnpublishStream, this.handleStreamRemove);
     this.engine.off(VERTC.events.onUserStartVideoCapture, this.handleUserStartVideoCapture);
     this.engine.off(VERTC.events.onUserStopVideoCapture, this.handleUserStopVideoCapture);
-    this.engine.off(VERTC.events.onUserJoined, this.handleUserJoin);
+    this.engine.off(VERTC.events.onUserJoined, this.handleUserEnter);
     this.engine.off(VERTC.events.onUserLeave, this.handleUserLeave);
     this.engine.off(VERTC.events.onAutoplayFailed, this.handleAutoPlayFail);
     this.engine.off(VERTC.events.onPlayerEvent, this.handlePlayerEvent);
@@ -81,7 +81,6 @@ export default class RtcClient {
    */
   async getDevices() {
     const devices = await VERTC.enumerateDevices();
-
     return {
       audioInputs: devices.filter((i) => i.deviceId && i.kind === 'audioinput'),
       videoInputs: devices.filter((i) => i.deviceId && i.kind === 'videoinput'),
@@ -97,6 +96,7 @@ export default class RtcClient {
       video: 1,
       audio: 1,
     };
+    
     if (!devices.audioInputs.length && !devices.videoInputs.length) {
       callback({
         code: -1,

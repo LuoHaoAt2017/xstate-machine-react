@@ -2,7 +2,7 @@
   <div class="container">
     <h3 class="title">远程会诊</h3>
     <div class="room" v-if="hasJoin">
-      <MeetingRoom />
+      <MeetingRoom :userId="userId" :roomId="roomId"/>
     </div>
     <el-dialog v-model="dialogVisible" title="登录" width="360px">
       <el-form :model="ruleForm" :rules="formRules" ref="ruleFormRef">
@@ -35,8 +35,8 @@ export default defineComponent({
   data() {
     return {
       ruleForm: {
-        userId: "",
-        roomId: "",
+        userId: "Admin",
+        roomId: "1",
       },
       formRules: {
         roomId: [
@@ -74,7 +74,6 @@ export default defineComponent({
       });
     },
   },
-  mounted() {},
 });
 </script>
 
