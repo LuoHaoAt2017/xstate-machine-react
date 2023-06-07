@@ -13,6 +13,7 @@
             placeholder="会议ID"
             v-model="ruleForm.roomId"
             readonly
+            disabled
           ></el-input>
         </el-form-item>
         <el-form-item prop="userId" label="用户名">
@@ -44,6 +45,7 @@
 <script>
 import { defineComponent } from "vue";
 import Meeting from "@/components/Meeting.vue";
+import { UserOpts } from "@/config";
 export default defineComponent({
   name: "App",
   components: {
@@ -73,28 +75,7 @@ export default defineComponent({
       },
       dialogVisible: false,
       hasJoin: false,
-      options: [
-        {
-          value: "User1",
-          label: "User1",
-        },
-        {
-          value: "User2",
-          label: "User2",
-        },
-        {
-          value: "User3",
-          label: "User3",
-        },
-        {
-          value: "User4",
-          label: "User4",
-        },
-        {
-          value: "User5",
-          label: "User5",
-        },
-      ],
+      options: UserOpts,
     };
   },
   methods: {
