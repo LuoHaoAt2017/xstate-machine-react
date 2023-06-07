@@ -75,8 +75,8 @@ export default defineComponent({
             const { code, msg, devicesStatus } = res;
             if (code == -1) {
               console.error(msg, devicesStatus);
-              toggleVoice(false);
-              toggleVideo(false);
+              this.toggleVoice(false);
+              this.toggleVideo(false);
               ElMessageBox.alert(msg, devicesStatus, {
                 confirmButtonText: "OK",
                 callback: (action) => {},
