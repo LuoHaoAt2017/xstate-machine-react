@@ -26,7 +26,7 @@ import VoiceControl from "./VoiceControl.vue";
 import VideoControl from "./VideoControl.vue";
 import LeaveControl from "./LeaveControl.vue";
 import MediaPlayer from "./MediaPlayer.vue";
-import { streamOptions, config } from "@/config";
+import { streamOptions, TokenOpts, config } from "@/config";
 export default defineComponent({
   name: "Meeting",
   components: {
@@ -37,11 +37,11 @@ export default defineComponent({
   },
   props: {
     userId: {
-      default: "Admin",
+      default: "",
       required: true,
     },
     roomId: {
-      default: "1",
+      default: "",
       required: true,
     },
   },
@@ -68,8 +68,13 @@ export default defineComponent({
       if (!this.userId || !this.roomId || !this.rtcClient) {
         return;
       }
+      const target = TokenOpts.find(x => x.userId == this.userId);
+      if (!target) {
+        console.error('target token 不存在');
+        return;
+      }
       this.rtcClient
-        .join(config.token, this.roomId, this.userId)
+        .join(target.token, this.roomId, this.userId)
         .then(() => {
           this.rtcClient.createLocalStream(this.userId, (res) => {
             const { code, msg, devicesStatus } = res;

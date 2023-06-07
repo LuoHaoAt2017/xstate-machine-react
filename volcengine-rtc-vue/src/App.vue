@@ -1,16 +1,33 @@
 <template>
   <div class="container">
-    <el-button type="primary" @click="dialogVisible = true">发起远程会诊</el-button>
+    <el-button type="primary" @click="dialogVisible = true"
+      >发起远程会诊</el-button
+    >
     <div class="room" v-if="hasJoin">
-      <MeetingRoom :userId="userId" :roomId="roomId" @leave="hasJoin=false;"/>
+      <MeetingRoom :userId="ruleForm.userId" :roomId="ruleForm.roomId" @leave="hasJoin = false" />
     </div>
     <el-dialog v-model="dialogVisible" title="登录" width="360px">
       <el-form :model="ruleForm" :rules="formRules" ref="ruleFormRef">
         <el-form-item prop="roomId">
-          <el-input placeholder="会议ID" v-model="ruleForm.roomId"></el-input>
+          <el-input
+            placeholder="会议ID"
+            v-model="ruleForm.roomId"
+            readonly
+          ></el-input>
         </el-form-item>
         <el-form-item prop="userId">
-          <el-input placeholder="用户ID" v-model="ruleForm.userId"></el-input>
+          <el-select
+            placeholder="用户ID"
+            v-model="ruleForm.userId"
+            style="width: 100%"
+          >
+            <el-option
+              v-for="(elem, index) in options"
+              :label="elem.label"
+              :value="elem.value"
+              :key="index"
+            ></el-option>
+          </el-select>
         </el-form-item>
       </el-form>
       <template #footer>
@@ -26,16 +43,16 @@
 
 <script>
 import { defineComponent } from "vue";
-import Meeting from '@/components/Meeting.vue';
+import Meeting from "@/components/Meeting.vue";
 export default defineComponent({
   name: "App",
   components: {
-    MeetingRoom: Meeting
+    MeetingRoom: Meeting,
   },
   data() {
     return {
       ruleForm: {
-        userId: "Admin",
+        userId: "User1",
         roomId: "1",
       },
       formRules: {
@@ -55,17 +72,36 @@ export default defineComponent({
         ],
       },
       dialogVisible: false,
-      hasJoin: false
+      hasJoin: false,
+      options: [
+        {
+          value: "User1",
+          label: "User1",
+        },
+        {
+          value: "User2",
+          label: "User2",
+        },
+        {
+          value: "User3",
+          label: "User3",
+        },
+        {
+          value: "User4",
+          label: "User4",
+        },
+        {
+          value: "User5",
+          label: "User5",
+        },
+      ],
     };
-  },
-  computed: {
   },
   methods: {
     async handleSubmit() {
       const formEl = this.$refs.ruleFormRef;
       await formEl.validate((valid, fields) => {
         if (valid) {
-          console.log("submit!");
           this.dialogVisible = false;
           this.hasJoin = true;
         } else {
