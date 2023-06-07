@@ -12,7 +12,7 @@ export const config = {
 
 export const streamOptions = {
   audio: true,
-  video: true,
+  video: false,
 };
 
 export const TokenOpts = [

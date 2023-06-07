@@ -84,12 +84,14 @@ export default defineComponent({
           this.rtcClient.createLocalStream(this.userId, (res) => {
             const { code, msg, devicesStatus } = res;
             if (code == -1) {
-              console.error(msg, devicesStatus);
               this.toggleVoice(false);
               this.toggleVideo(false);
-              ElMessageBox.alert(msg, devicesStatus, {
-                confirmButtonText: "OK",
-                callback: (action) => {},
+              ElMessageBox.alert(msg, '设备获取失败', {
+                showCancelButton: false,
+                showClose: false,
+                confirmButtonText: "知道啦"
+              }).then(() => {
+                this.leaveRoom();
               });
             } else {
               this.toggleVoice(true);

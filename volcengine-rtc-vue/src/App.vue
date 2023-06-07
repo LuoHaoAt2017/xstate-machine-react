@@ -1,10 +1,14 @@
 <template>
   <div class="container">
-    <el-button type="primary" @click="dialogVisible = true"
-      >发起远程会诊</el-button
-    >
+    <el-icon @click="dialogVisible = true" style="cursor: pointer;">
+      <img :src="videoIcon" alt="video" height="24" />
+    </el-icon>
     <div class="room" v-if="hasJoin">
-      <MeetingRoom :userId="ruleForm.userId" :roomId="ruleForm.roomId" @leave="hasJoin = false" />
+      <MeetingRoom
+        :userId="ruleForm.userId"
+        :roomId="ruleForm.roomId"
+        @leave="hasJoin = false"
+      />
     </div>
     <el-dialog v-model="dialogVisible" title="登录" width="360px">
       <el-form :model="ruleForm" :rules="formRules" ref="ruleFormRef">
@@ -45,6 +49,7 @@
 <script>
 import { defineComponent } from "vue";
 import Meeting from "@/components/Meeting.vue";
+import VideoIcon from "@/assets/svg/video.svg";
 import { UserOpts } from "@/config";
 export default defineComponent({
   name: "App",
@@ -76,6 +81,7 @@ export default defineComponent({
       dialogVisible: false,
       hasJoin: false,
       options: UserOpts,
+      videoIcon: VideoIcon,
     };
   },
   methods: {

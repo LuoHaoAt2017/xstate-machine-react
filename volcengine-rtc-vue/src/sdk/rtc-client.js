@@ -87,7 +87,7 @@ export default class RtcClient {
     if (!devices.audioInputs.length && !devices.videoInputs.length) {
       callback({
         code: -1,
-        msg: '摄像头和音频设备获取失败',
+        msg: '请确保当前设备有摄像头和音频设备，并授权浏览器使用摄像头和音频设备。',
         devicesStatus: {
           video: 0,
           audio: 0,
