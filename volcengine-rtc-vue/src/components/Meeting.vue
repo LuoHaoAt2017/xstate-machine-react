@@ -1,7 +1,9 @@
 <template>
   <div class="meeting">
     <div class="video-container">
-      <div id="local-player" class="local"></div>
+      <div id="local-player" class="local">
+        <div class="userInfo">{{ userName }}</div>
+      </div>
       <div id="remote-video" class="remote">
         <MediaPlayer
           v-for="(item, index) in remoteStreams"
@@ -26,7 +28,7 @@ import VoiceControl from "./VoiceControl.vue";
 import VideoControl from "./VideoControl.vue";
 import LeaveControl from "./LeaveControl.vue";
 import MediaPlayer from "./MediaPlayer.vue";
-import { streamOptions, TokenOpts, config } from "@/config";
+import { streamOptions, TokenOpts, UserOpts, config } from "@/config";
 export default defineComponent({
   name: "Meeting",
   components: {
@@ -57,6 +59,9 @@ export default defineComponent({
     rtcParams() {
       return this.roomId + this.userId;
     },
+    userName() {
+      return UserOpts.find((x) => x.value == this.userId)?.label;
+    },
   },
   watch: {
     rtcParams() {
@@ -68,9 +73,9 @@ export default defineComponent({
       if (!this.userId || !this.roomId || !this.rtcClient) {
         return;
       }
-      const target = TokenOpts.find(x => x.userId == this.userId);
+      const target = TokenOpts.find((x) => x.userId == this.userId);
       if (!target) {
-        console.error('target token 不存在');
+        console.error("target token 不存在");
         return;
       }
       this.rtcClient
@@ -208,12 +213,15 @@ export default defineComponent({
   flex-shrink: 1;
   border: 1px solid #eee;
   height: 100%;
+  position: relative;
 }
 .remote {
   width: 320px;
   border: 1px solid #eee;
   margin-left: 20px;
   height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 .control-toolbar {
   display: flex;
@@ -225,5 +233,13 @@ export default defineComponent({
   padding: 0px 20px;
   border-radius: 24px;
   background-color: #36393f;
+}
+.userInfo {
+  position: absolute;
+  top: 0;
+  right: 0;
+  color: blue;
+  font-size: 20px;
+  z-index: 10;
 }
 </style>
