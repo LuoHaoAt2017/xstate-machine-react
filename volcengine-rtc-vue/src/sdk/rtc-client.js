@@ -41,9 +41,6 @@ export default class RtcClient {
       renderDom: domId,
     });
   }
-  /**
-   * remove the listeners when `createEngine`
-   */
   removeEventListener() {
     this.engine.off(VERTC.events.onUserPublishStream, this.handleStreamAdd);
     this.engine.off(VERTC.events.onUserUnpublishStream, this.handleStreamRemove);
@@ -70,14 +67,9 @@ export default class RtcClient {
       }
     );
   }
-  // check permission of browser
   checkPermission() {
     return VERTC.enableDevices();
   }
-  /**
-   * get the devices
-   * @returns
-   */
   async getDevices() {
     const devices = await VERTC.enumerateDevices();
     return {
@@ -85,10 +77,6 @@ export default class RtcClient {
       videoInputs: devices.filter((i) => i.deviceId && i.kind === 'videoinput'),
     };
   }
-  /**
-   * create the local stream with the config and publish the local stream
-   * @param {*} callback
-   */
   async createLocalStream(userId, callback) {
     const devices = await this.getDevices();
     const devicesStatus = {
@@ -99,7 +87,7 @@ export default class RtcClient {
     if (!devices.audioInputs.length && !devices.videoInputs.length) {
       callback({
         code: -1,
-        msg: '设备获取失败',
+        msg: '摄像头和音频设备获取失败',
         devicesStatus: {
           video: 0,
           audio: 0,

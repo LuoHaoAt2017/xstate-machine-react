@@ -8,14 +8,14 @@
     </div>
     <el-dialog v-model="dialogVisible" title="登录" width="360px">
       <el-form :model="ruleForm" :rules="formRules" ref="ruleFormRef">
-        <el-form-item prop="roomId">
+        <el-form-item prop="roomId" label="会议号">
           <el-input
             placeholder="会议ID"
             v-model="ruleForm.roomId"
             readonly
           ></el-input>
         </el-form-item>
-        <el-form-item prop="userId">
+        <el-form-item prop="userId" label="用户名">
           <el-select
             placeholder="用户ID"
             v-model="ruleForm.userId"
@@ -33,7 +33,7 @@
       <template #footer>
         <div class="footer">
           <el-button type="primary" @click.stop="handleSubmit">
-            进入房间
+            进入会议
           </el-button>
         </div>
       </template>
