@@ -1,33 +1,79 @@
-import { useState } from "react";
-import reactLogo from "./assets/react.svg";
-import viteLogo from "/vite.svg";
+import { createActor, assign, setup } from "xstate";
 import "./App.css";
 
 function App() {
-  const [count, setCount] = useState(0);
+  const machine = setup({
+    types: {} as {
+      context: {
+        maxCount: number;
+        count: number;
+      };
+    },
+    actions: {
+      goSleep: () => {},
+      greet: ({ context, event }, params: { count: number }) => {
+        console.log("greet:", params.count);
+      },
+    },
+  }).createMachine({
+    id: "toggle",
+    context: ({ input }: any) => ({
+      count: 0,
+      maxCount: input.maxCount,
+    }), // 状态机内部状态流转需要的变量
+    initial: "Inactive",
+    states: {
+      Inactive: {
+        entry: assign({
+          count: ({ context }) => context.count + 1,
+        }),
+        on: {
+          toggle: {
+            guard: ({ context }) => context.count < context.maxCount,
+            target: "Active",
+          },
+        },
+      },
+      Active: {
+        on: { toggle: "Inactive" },
+        after: {
+          3000: {
+            target: "Inactive",
+            actions: "goSleep",
+          },
+        },
+        entry: {
+          type: "greet",
+          params: ({ context }) => ({
+            count: context.count,
+          }),
+        },
+        exit: assign(({ context }) => ({
+          count: context.count + 1,
+        })),
+      },
+    },
+  });
+
+  const actor = createActor(machine, {
+    input: {
+      maxCount: 4,
+    },
+  });
+
+  actor.subscribe((snapshot) => {
+    console.log("Value:", snapshot.value);
+  });
+
+  actor.start();
+
+  const onClick = () => {
+    actor.send({ type: "toggle" });
+  };
 
   return (
     <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+      <button onClick={onClick}>toggle</button>
     </>
   );
 }
