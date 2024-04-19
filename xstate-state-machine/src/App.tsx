@@ -53,6 +53,9 @@ function App() {
         })),
       },
     },
+    output: {
+      mesg: "resolved",
+    },
   });
 
   const actor = createActor(machine, {
