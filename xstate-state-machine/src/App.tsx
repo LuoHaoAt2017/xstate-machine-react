@@ -1,82 +1,24 @@
-import { createActor, assign, setup } from "xstate";
+import { useMachine } from "@xstate/react";
+import lightMachine from "./lightMachine";
 import "./App.css";
 
 function App() {
-  const machine = setup({
-    types: {} as {
-      context: {
-        maxCount: number;
-        count: number;
-      };
-    },
-    actions: {
-      goSleep: () => {},
-      greet: ({ context, event }, params: { count: number }) => {
-        console.log("greet:", params.count);
-      },
-    },
-  }).createMachine({
-    id: "toggle",
-    context: ({ input }: any) => ({
-      count: 0,
-      maxCount: input.maxCount,
-    }), // 状态机内部状态流转需要的变量
-    initial: "Inactive",
-    states: {
-      Inactive: {
-        entry: assign({
-          count: ({ context }) => context.count + 1,
-        }),
-        on: {
-          toggle: {
-            guard: ({ context }) => context.count < context.maxCount,
-            target: "Active",
-          },
-        },
-      },
-      Active: {
-        on: { toggle: "Inactive" },
-        after: {
-          3000: {
-            target: "Inactive",
-            actions: "goSleep",
-          },
-        },
-        entry: {
-          type: "greet",
-          params: ({ context }) => ({
-            count: context.count,
-          }),
-        },
-        exit: assign(({ context }) => ({
-          count: context.count + 1,
-        })),
-      },
-    },
-    output: {
-      mesg: "resolved",
-    },
-  });
-
-  const actor = createActor(machine, {
-    input: {
-      maxCount: 4,
-    },
-  });
-
-  actor.subscribe((snapshot) => {
-    console.log("Value:", snapshot.value);
-  });
-
-  actor.start();
-
+  const [state, send] = useMachine(lightMachine);
   const onClick = () => {
-    actor.send({ type: "toggle" });
+    send({
+      type: "toggle",
+    });
   };
 
   return (
     <>
-      <button onClick={onClick}>toggle</button>
+      {state.matches("green")
+        ? "绿灯行"
+        : state.matches("red")
+        ? "红灯停"
+        : state.matches("yellow")
+        ? "黄灯紧"
+        : "非法灯光"}
     </>
   );
 }
