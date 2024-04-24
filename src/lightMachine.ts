@@ -30,6 +30,59 @@ const lightMachine = createMachine(
         }
       },
       red: {
+        type: "parallel",
+        states: {
+          crosswalkNorth: {
+            initial: "walk",
+            states: {
+              walk: {
+                on: {
+                  PED_WAIT: {
+                    target: "wait"
+                  }
+                }
+              },
+              wait: {
+                on: {
+                  PED_STOP: {
+                    target: "stop"
+                  }
+                }
+              },
+              stop: {
+                type: "final"
+              }
+            },
+            onDone: {
+              actions: "stopCrosswalkNorth"
+            }
+          },
+          crosswalkEast: {
+            initial: "walk",
+            states: {
+              walk: {
+                on: {
+                  PED_WAIT: {
+                    target: "wait"
+                  }
+                }
+              },
+              wait: {
+                on: {
+                  PED_STOP: {
+                    target: "stop"
+                  }
+                }
+              },
+              stop: {
+                type: "final"
+              }
+            },
+            onDone: {
+              actions: "stopCrosswalkEast"
+            }
+          }
+        },
         on: {
           toggle: {
             target: 'green'
@@ -44,7 +97,14 @@ const lightMachine = createMachine(
     },
   },
   {
-    actions: {},
+    actions: {
+      stopCrosswalkNorth() {
+        console.log("===stopCrosswalkNorth===");
+      },
+      stopCrosswalkEast() {
+        console.log("===stopCrosswalkEast===");
+      }
+    },
     delays: {},
     guards: {},
     services: {},
