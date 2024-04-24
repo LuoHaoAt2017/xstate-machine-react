@@ -11,11 +11,11 @@ const lightMachine = createMachine(
             target: 'yellow'
           }
         },
-        after: {
-          5000: {
-            target: 'yellow'
-          }
-        }
+        // after: {
+        //   5000: {
+        //     target: 'yellow'
+        //   }
+        // }
       },
       yellow: {
         on: {
@@ -23,11 +23,11 @@ const lightMachine = createMachine(
             target: 'red'
           }
         },
-        after: {
-          2000: {
-            target: 'red'
-          }
-        }
+        // after: {
+        //   2000: {
+        //     target: 'red'
+        //   }
+        // }
       },
       red: {
         type: "parallel",
@@ -83,16 +83,19 @@ const lightMachine = createMachine(
             }
           }
         },
+        onDone: {
+          target: "green"
+        },
         on: {
           toggle: {
             target: 'green'
           }
         },
-        after: {
-          3000: {
-            target: 'green'
-          }
-        }
+        // after: {
+        //   3000: {
+        //     target: 'green'
+        //   }
+        // }
       },
     },
   },
