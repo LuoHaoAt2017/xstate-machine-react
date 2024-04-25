@@ -1,25 +1,14 @@
-import { useMachine } from "@xstate/react";
-import lightMachine from "./lightMachine";
+import { RouterProvider } from "react-router-dom";
+import { Provider } from "react-redux";
+import router from "@/router";
+import store from "@/redux";
 import "./App.css";
 
 function App() {
-  const [state, send] = useMachine(lightMachine);
-  const onClick = () => {
-    send({
-      type: "toggle",
-    });
-  };
-
   return (
-    <>
-      {state.matches("green")
-        ? "绿灯行"
-        : state.matches("red")
-        ? "红灯停"
-        : state.matches("yellow")
-        ? "黄灯紧"
-        : "非法灯光"}
-    </>
+    <Provider store={store}>
+      <RouterProvider router={router} />
+    </Provider>
   );
 }
 
