@@ -1,9 +1,9 @@
 import { createBrowserRouter } from "react-router-dom";
-import Designer from "@/pages/designer";
+import ReportDesigner from "@/pages/report";
 
 const router = createBrowserRouter([{
   path: "/",
-  Component: Designer
+  Component: ReportDesigner
 }]);
 
 export default router;
