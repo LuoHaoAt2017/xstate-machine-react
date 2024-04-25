@@ -1,5 +1,5 @@
-function Editor() {
+function ControlEditor() {
   return <div className=""></div>;
 }
 
-export default Editor;
+export default ControlEditor;

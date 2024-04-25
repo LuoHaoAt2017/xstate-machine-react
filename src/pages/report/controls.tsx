@@ -1,5 +1,5 @@
-function Controls() {
+function ReportControls() {
   return <div className=""></div>;
 }
 
-export default Controls;
+export default ReportControls;

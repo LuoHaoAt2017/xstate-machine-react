@@ -1,6 +1,6 @@
-function Designer() {
+function ReportDesigner() {
   return <div className="">
   </div>;
 }
 
-export default Designer;
+export default ReportDesigner;
