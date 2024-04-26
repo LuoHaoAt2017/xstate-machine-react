@@ -1,20 +1,42 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice } from "@reduxjs/toolkit";
+import { ControlTypeEnum } from "@/enums";
+
+const initialState: IReportState = {
+  fieldList: [
+    {
+      controlType: ControlTypeEnum.FormCheckBox,
+      controlName: "FormCheckBox",
+      controlCode: "0001",
+      controlOpts: { visible: true, disable: true, options: [] },
+      controlValue: "",
+    },
+    {
+      controlType: ControlTypeEnum.FormDate,
+      controlName: "FormDatePicker",
+      controlCode: "0002",
+      controlOpts: { visible: true, disable: true, options: [] },
+      controlValue: "",
+    },
+    {
+      controlType: ControlTypeEnum.FormInput,
+      controlName: "FormInput",
+      controlCode: "0003",
+      controlOpts: { visible: true, disable: true, options: [] },
+      controlValue: "",
+    },
+  ],
+};
 
 export const reportSlice = createSlice({
-  name: 'report',
-  initialState: {
-    value: 0,
-  },
+  name: "report",
+  initialState,
   reducers: {
-    increment: (state) => {
-      state.value += 1;
-    },
-    decrement: (state) => {
-      state.value -= 1;
+    updateFields(state, action) {
+      state.fieldList = action.payload;
     },
   },
 });
 
-export const { increment, decrement } = reportSlice.actions;
+export const { updateFields } = reportSlice.actions;
 
 export default reportSlice.reducer;
