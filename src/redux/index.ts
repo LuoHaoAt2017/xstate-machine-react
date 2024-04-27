@@ -1,6 +1,6 @@
 import { configureStore } from "@reduxjs/toolkit";
-import globalSlice from "./global";
-import reportSlice from "./report";
+import globalSlice from "./globalReducer";
+import reportSlice from "./reportReducer";
 
 const store = configureStore({
   reducer: {

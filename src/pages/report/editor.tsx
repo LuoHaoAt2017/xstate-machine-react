@@ -1,5 +1,5 @@
 function ControlEditor() {
-  return <div className=""></div>;
+  return <div className="border grow-[1]"></div>;
 }
 
 export default ControlEditor;
