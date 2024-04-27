@@ -1,6 +1,8 @@
-import { DragEvent } from "react";
+import { DragEvent, ReactNode } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { ControlTypeEnum } from "@/enums";
+import { RootState } from "@/redux";
+import { addField, swapField } from "@/redux/reportReducer";
 import {
   FormCheck,
   FormDate,
@@ -9,9 +11,8 @@ import {
   FormSelect,
   FormSlider,
   FormSwitch,
+  FormLayout,
 } from "@/components";
-import { RootState } from "@/redux";
-import { addField } from "@/redux/reportReducer";
 
 /**
  * 在拖放目标上触发事件 (目标元素):
@@ -53,15 +54,17 @@ function ReportDesigner() {
   const onDrop = (evt: DragEvent) => {
     (evt.target as HTMLDivElement).classList.toggle("canDrop");
     const transferData = evt.dataTransfer.getData("text/control");
-    dispatch(addField(JSON.parse(transferData)));
+    if (evt.dataTransfer.effectAllowed === "copy") {
+      dispatch(addField(JSON.parse(transferData)));
+    }
   };
 
   return (
     <div
-      className="grow-[2] border dropzone"
+      className="grow-[2] border"
       onDragEnter={onDragEnter}
-      onDragLeave={onDragLeave}
       onDragOver={onDragOver}
+      onDragLeave={onDragLeave}
       onDrop={onDrop}
     >
       <ReportControls />
@@ -80,42 +83,207 @@ function ReportControls() {
   );
 }
 
+function CommonControl({
+  children,
+  field,
+}: {
+  children: ReactNode;
+  field: IControlItem;
+}) {
+  const dispatch = useDispatch();
+  const fieldList = useSelector((state: RootState) => state.report.fieldList);
+
+  const onDragStart = (evt: DragEvent) => {
+    evt.dataTransfer.setData("text/control", JSON.stringify(field));
+    evt.dataTransfer.effectAllowed = "move";
+  };
+
+  const onDragOver = (evt: DragEvent) => {
+    evt.preventDefault();
+  };
+
+  const onDragEnter = (evt: DragEvent) => {
+    if (evt.dataTransfer.types.includes("text/control")) {
+      evt.preventDefault();
+    } else {
+      console.warn("拖拽的数据类型不符合要求，不允许放置。");
+    }
+  };
+
+  const onDrop = (evt: DragEvent) => {
+    const transferData = evt.dataTransfer.getData("text/control");
+    const origin = (transferData && JSON.parse(transferData)) || null;
+    if (!origin) {
+      return;
+    }
+    const target = field;
+    const originIndex = fieldList.findIndex(
+      (elem) => elem.controlCode === origin.controlCode
+    );
+    const targetIndex = fieldList.findIndex(
+      (elem) => elem.controlCode === target.controlCode
+    );
+    if (originIndex === -1 || targetIndex === -1) {
+      console.error(
+        "originIndex: ",
+        originIndex,
+        " targetIndex: ",
+        targetIndex
+      );
+      return;
+    }
+    if (originIndex === targetIndex) {
+      return;
+    }
+    console.log("origin control: ", origin);
+    if (evt.dataTransfer.dropEffect === "move") {
+      dispatch(swapField({ originIndex, targetIndex }));
+    } else if (evt.dataTransfer.dropEffect === "copy") {
+      console.log("左侧拖拽元素到当前控件上");
+    }
+    // 任何元素放置到普通元素上（包含布局元素），交换两个元素的位置。
+    // dispatch(addField(JSON.parse(transferData)));
+  };
+
+  return (
+    <div
+      draggable={true}
+      onDragStart={onDragStart}
+      onDragEnter={onDragEnter}
+      onDragOver={onDragOver}
+      onDrop={onDrop}
+    >
+      {children}
+    </div>
+  );
+}
+
+function LayoutControl({
+  children,
+  field,
+}: {
+  children: ReactNode;
+  field: IControlItem;
+}) {
+  const onDragStart = (evt: DragEvent) => {
+    evt.dataTransfer.setData("text/control", JSON.stringify(field));
+  };
+  const onDragEnter = (evt: DragEvent) => {
+    if (evt.dataTransfer.types.includes("text/control")) {
+      evt.preventDefault();
+    } else {
+      console.warn("拖拽的数据类型不符合要求，不允许放置。");
+    }
+    (evt.target as HTMLDivElement).classList.toggle("canDrop");
+  };
+
+  const onDragOver = (evt: DragEvent) => {
+    evt.preventDefault();
+  };
+
+  const onDrop = (evt: DragEvent) => {
+    const transferData = evt.dataTransfer.getData("text/control");
+    const control = transferData && JSON.parse(transferData);
+    console.log("control: ", control);
+    // 布局元素放置到布局元素上，交换两个布局元素的位置。
+    // 普通元素放置到布局元素上，将普通元素放置在布局元素中。
+    // dispatch(addField(JSON.parse(transferData)));
+  };
+
+  return (
+    <div
+      draggable={true}
+      onDragStart={onDragStart}
+      onDragEnter={onDragEnter}
+      onDragOver={onDragOver}
+      onDrop={onDrop}
+    >
+      {children}
+    </div>
+  );
+}
+
 function ControlRender({ field }: { field: IControlItem }) {
   const ControlMap = [
     {
       guard: (controlType: ControlTypeEnum) =>
         controlType === ControlTypeEnum.FormInput,
-      render: (control: IControlItem) => <FormInput control={control} />,
+      render: (control: IControlItem) => (
+        <CommonControl
+          field={field}
+          children={<FormInput control={control} />}
+        />
+      ),
     },
     {
       guard: (controlType: ControlTypeEnum) =>
         controlType === ControlTypeEnum.FormSwitch,
-      render: (control: IControlItem) => <FormSwitch control={control} />,
+      render: (control: IControlItem) => (
+        <CommonControl
+          field={field}
+          children={<FormSwitch control={control} />}
+        />
+      ),
     },
     {
       guard: (controlType: ControlTypeEnum) =>
         controlType === ControlTypeEnum.FormCheckBox,
-      render: (control: IControlItem) => <FormCheck control={control} />,
+      render: (control: IControlItem) => (
+        <CommonControl
+          field={field}
+          children={<FormCheck control={control} />}
+        />
+      ),
     },
     {
       guard: (controlType: ControlTypeEnum) =>
         controlType === ControlTypeEnum.FormRadio,
-      render: (control: IControlItem) => <FormRadio control={control} />,
+      render: (control: IControlItem) => (
+        <CommonControl
+          field={field}
+          children={<FormRadio control={control} />}
+        />
+      ),
     },
     {
       guard: (controlType: ControlTypeEnum) =>
         controlType === ControlTypeEnum.FormSelect,
-      render: (control: IControlItem) => <FormSelect control={control} />,
+      render: (control: IControlItem) => (
+        <CommonControl
+          field={field}
+          children={<FormSelect control={control} />}
+        />
+      ),
     },
     {
       guard: (controlType: ControlTypeEnum) =>
         controlType === ControlTypeEnum.FormDate,
-      render: (control: IControlItem) => <FormDate control={control} />,
+      render: (control: IControlItem) => (
+        <CommonControl
+          field={field}
+          children={<FormDate control={control} />}
+        />
+      ),
     },
     {
       guard: (controlType: ControlTypeEnum) =>
         controlType === ControlTypeEnum.FormSlider,
-      render: (control: IControlItem) => <FormSlider control={control} />,
+      render: (control: IControlItem) => (
+        <CommonControl
+          field={field}
+          children={<FormSlider control={control} />}
+        />
+      ),
+    },
+    {
+      guard: (controlType: ControlTypeEnum) =>
+        controlType === ControlTypeEnum.FormLayout,
+      render: (control: IControlItem) => (
+        <LayoutControl
+          field={field}
+          children={<FormLayout control={control} />}
+        />
+      ),
     },
   ];
   return (

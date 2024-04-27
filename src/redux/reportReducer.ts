@@ -15,9 +15,15 @@ export const reportSlice = createSlice({
     addField(state, action) {
       state.fieldList.push(action.payload);
     },
+    swapField(state, action) {
+      const { originIndex, targetIndex } = action.payload;
+      const origin = state.fieldList[originIndex];
+      state.fieldList[originIndex] = state.fieldList[targetIndex];
+      state.fieldList[targetIndex] = origin;
+    },
   },
 });
 
-export const { updateFields, addField } = reportSlice.actions;
+export const { updateFields, addField, swapField } = reportSlice.actions;
 
 export default reportSlice.reducer;

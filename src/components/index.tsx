@@ -5,3 +5,4 @@ export { FormRadio } from './formRadio';
 export { FormSelect } from './formSelect';
 export { FormSlider } from './formSlider';
 export { FormSwitch } from './formSwitch';
+export { FormLayout } from './formLayout';
