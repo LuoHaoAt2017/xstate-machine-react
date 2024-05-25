@@ -1,9 +1,5 @@
-interface IControlItem {
-  controlType: number;
-  controlName: string;
-  controlCode: string;
-  controlOpts: IControlOption;
-  controlValue: any;
+interface IControlLayout {
+  direction: string
 }
 
 interface IControlOption {
@@ -13,8 +9,12 @@ interface IControlOption {
   layout?: IControlLayout
 }
 
-interface IControlLayout {
-  direction: string
+interface IControlItem {
+  controlType: number;
+  controlName: string;
+  controlCode: string;
+  controlOpts: IControlOption;
+  controlValue: any;
 }
 
 interface IReportState {
