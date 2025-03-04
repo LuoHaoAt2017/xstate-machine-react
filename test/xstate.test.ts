@@ -59,6 +59,8 @@ describe('人机对话状态机测试', function () {
   });
 
   test('瞬时状态转换：判断水桶是否已经满了。', () => {
+    // 用于条件判断或逻辑处理，而不需要用户干预。
+    // 当某个状态需要立即转移到另一个状态时。
     const bucketMachine = createMachine({
       initial: 'empty',
       context: {
