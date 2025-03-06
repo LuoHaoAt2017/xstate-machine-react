@@ -45,6 +45,7 @@ function TodoItem({
     >
       <td className="p-2 w-3/4">
         <input
+          className="w-full"
           value={state.context.curName}
           onChange={handleChange}
           disabled={!state.hasTag("form")}
