@@ -4,6 +4,7 @@ import Fan from "@/pages/Fan";
 import Home from "@/pages/Home";
 import About from "@/pages/About";
 import Chat from "@/pages/Chat";
+import TodoList from "@/pages/TodoList";
 
 const router = createBrowserRouter([
   {
@@ -25,6 +26,10 @@ const router = createBrowserRouter([
       {
         path: "/chat",
         element: <Chat />,
+      },
+      {
+        path: "/todoList",
+        element: <TodoList />,
       },
     ],
   },
