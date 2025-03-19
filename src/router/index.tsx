@@ -5,6 +5,7 @@ import Home from "@/pages/Home";
 import About from "@/pages/About";
 import Chat from "@/pages/Chat";
 import TodoList from "@/pages/TodoList";
+import Timer from "@/pages/Timer";
 
 const router = createBrowserRouter([
   {
@@ -30,6 +31,10 @@ const router = createBrowserRouter([
       {
         path: "/todoList",
         element: <TodoList />,
+      },
+      {
+        path: "/timer",
+        element: <Timer />,
       },
     ],
   },
