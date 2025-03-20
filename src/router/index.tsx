@@ -6,6 +6,7 @@ import About from "@/pages/About";
 import Chat from "@/pages/Chat";
 import TodoList from "@/pages/TodoList";
 import Timer from "@/pages/Timer";
+import Login from "@/pages/Login";
 
 const router = createBrowserRouter([
   {
@@ -37,6 +38,10 @@ const router = createBrowserRouter([
         element: <Timer />,
       },
     ],
+  },
+  {
+    path: "/login",
+    element: <Login />,
   },
 ]);
 
