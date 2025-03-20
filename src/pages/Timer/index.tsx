@@ -10,38 +10,55 @@ import timerMachine from "./config";
  */
 function Timer() {
   const watchRef = useRef(null);
-  const [state, send] = useMachine(timerMachine);
+  const chartRef = useRef<Chart>();
+  const [state, send] = useMachine(timerMachine, {
+    context: {
+      total: 10,
+      counter: 0
+    }
+  });
+  const total = state.context.total;
   const counter = state.context.counter;
-  console.log("counter", counter);
+
   useEffect(() => {
     if (!watchRef.current) {
       return;
     }
-    const chart = new Chart({
-      container: watchRef.current,
-      autoFit: true,
+
+    if (!chartRef.current) {
+      const chart = new Chart({
+        container: watchRef.current,
+        autoFit: true,
+      });
+
+      chart
+        .gauge()
+        .data({
+          value: {
+            target: total - counter,
+            total: total,
+          },
+        })
+        .legend(false);
+
+      chart.render();
+      chartRef.current = chart;
+    }
+    chartRef.current.changeData({
+      value: {
+        target: total - counter,
+        total: total,
+      },
     });
+  }, [counter, total]);
 
-    chart
-      .gauge()
-      .data({
-        value: {
-          target: counter,
-          total: 10,
-          name: 'score',
-        },
-      })
-      .legend(false);
-
-    chart.render();
-  }, [counter]);
-
-  return <div className="flex flex-col justify-center align-middle">
+  return <div className="flex flex-col justify-center">
     <div ref={watchRef}></div>
-    <Button.Group>
+    <div className="flex justify-center align-middle gap-2">
       <Button onClick={() => send({ type: "START" })}>开始</Button>
-      <Button onClick={() => send({ type: "STOP" })}>停止</Button>
-    </Button.Group>
+      <Button onClick={() => send({ type: "PAUSE" })}>暂停</Button>
+      <Button onClick={() => send({ type: "STOP" })}>重置</Button>
+    </div>
   </div>
 }
 

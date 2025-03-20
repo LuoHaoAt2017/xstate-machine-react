@@ -6,7 +6,7 @@ export default function Layout() {
     <ConfigProvider
       componentSize="large"
       theme={{
-        algorithm: theme.darkAlgorithm,
+        algorithm: theme.compactAlgorithm,
         token: {
           borderRadius: 2,
         },

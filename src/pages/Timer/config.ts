@@ -1,14 +1,18 @@
 import { createMachine, assign } from "xstate";
 
-const machine = createMachine({
-  /** @xstate-layout N4IgpgJg5mDOIC5QAoC2BDAxgCwJYDswBKAOlgBcB7AB0gGIBlAFQEEAlJgbQAYBdRUNUqxc5XJXwCQAD0QAmAIwAOEgDYFAFgCsAdiVaNcpUo2qAzABoQAT0QKzcknPOqlmnRoWulqgL6+rNCw8QlIAJwBXfHwCKEYmAHkABR5+JBAhETEJKVkERS0SHXNuOWKATlVyo1KrW3yykjNK0w1DOS0HJX9AjBwCYhJI6Ni6JgBJAGEAaVSpTNFxSXS8nW4Sat03D2azJTNLG0Q3JrkjcuMlHQVufZ6QIP7QoaiY-Di59IXs5dA8gqKJTKVSqNTkdTsSkc3GKCh0DmcezM8P8ARA+EoEDgUkeIWI82EixyK0QAFoFBCEKS-GjcQNSBQaJACVklrlEA5ykUNPCdDo5Bo9nytJTlI4NOUFFopW44QpJd1aX08eFXrEWUTfjJEDzRSctvYjILuK4zFpUb4gA */
+type TimerContext = {
+  counter: number,
+  total: number,
+}
+
+const machine = createMachine<TimerContext>({
   id: "timerMachine",
-  context: {
-    counter: 0
-  },
-  initial: "stoped",
+  initial: "idle",
   states: {
-    stoped: {
+    idle: {
+      entry: assign({
+        counter: (ctx) => ctx.total
+      }),
       on: {
         START: {
           target: 'running'
@@ -21,17 +25,30 @@ const machine = createMachine({
       },
       on: {
         STOP: {
-          target: 'stoped'
+          target: 'idle',
         },
         TICK: {
           actions: assign({
-            counter: (ctx) => ctx.counter + 1
+            counter: (ctx) => ctx.counter - 1
           })
-        }
+        },
+        PAUSE: {
+          target: "pause"
+        },
       },
       always: {
-        cond: (ctx) => ctx.counter === 10,
-        target: "stoped"
+        cond: (ctx) => ctx.counter < 0,
+        target: "idle"
+      }
+    },
+    pause: {
+      on: {
+        START: {
+          target: "running"
+        },
+        STOP: {
+          target: "idle"
+        }
       }
     }
   }
